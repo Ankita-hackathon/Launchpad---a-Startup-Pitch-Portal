@@ -5,22 +5,22 @@ const getAIAnalysis = async (title, description, industry, genAI) => {
         });
 
         const prompt = `
-You are a senior venture capitalist.
+            You are a senior venture capitalist.
 
-Evaluate this startup idea critically.
+            Evaluate this startup idea critically.
 
-Startup:
-Title: ${title}
-Industry: ${industry}
-Description: ${description}
+            Startup:
+            Title: ${title}
+            Industry: ${industry}
+            Description: ${description}
 
-Return STRICT JSON only:
-{
-  "score": 0-100,
-  "feedback": "3 sentence critique",
-  "suggestions": ["idea 1", "idea 2", "idea 3"]
-}
-`;
+            Return STRICT JSON only:
+            {
+            "score": 0-100,
+            "feedback": "3 sentence critique",
+            "suggestions": ["idea 1", "idea 2", "idea 3"]
+            }
+            `;
 
         const result = await model.generateContent(prompt);
         const text = result.response.text();

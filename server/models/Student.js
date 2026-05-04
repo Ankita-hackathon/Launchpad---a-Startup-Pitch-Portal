@@ -1,4 +1,4 @@
-const mongoose = require("mongoose");
+const { mongoose } = require("mongoose")
 
 const studentSchema = new mongoose.Schema(
   {
@@ -7,13 +7,17 @@ const studentSchema = new mongoose.Schema(
     password: String,
     college: String,
     department: String,
-    photo: String,
-    role: {
-      type: String,
-      default: "student",
-    },
+    imagelink: String,
+    "submittedPitches": [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "pitches"
+      }
+    ]
+
   },
   { timestamps: true }
 );
 
-module.exports = mongoose.model("Student", studentSchema);
+module.exports = mongoose.model("students", studentSchema);
+
