@@ -84,13 +84,10 @@ const StudentDashboard = ({ token, onLogout }) => {
         <div className="space-y-10">
 
           {/* Hero */}
-          <div className="bg-gradient-to-r from-indigo-600 to-blue-600 text-white p-10 rounded-3xl shadow-xl">
-            <h1 className="text-4xl font-bold">
-              Welcome back 🚀
-            </h1>
-            <p className="opacity-90 mt-2">
-              Build, refine and launch your startup idea.
-            </p>
+          <div className="bg-gradient-to-r from-purple-600/20 to-blue-600/20 border border-purple-500/20 text-white p-10 rounded-3xl relative overflow-hidden">
+            <div className="absolute inset-0 bg-gradient-to-br from-purple-500/10 to-transparent" />
+            <h1 className="text-4xl font-black tracking-tight relative z-10">Welcome back 🚀</h1>
+            <p className="text-zinc-300 mt-2 relative z-10">Build, refine and launch your startup idea.</p>
           </div>
 
           <NewsSlider />
@@ -130,41 +127,38 @@ const StudentDashboard = ({ token, onLogout }) => {
 
       {/* ================= AI PITCH ================= */}
       {activeTab === "student_pitch_ai" && (
-        <div className="max-w-2xl mx-auto bg-white p-10 rounded-3xl shadow-xl space-y-6">
-          <h2 className="text-2xl font-bold">AI Pitch Auditor</h2>
+        <div className="max-w-2xl mx-auto bg-zinc-950 border border-white/10 p-10 rounded-3xl space-y-6">
+          <h2 className="text-2xl font-bold tracking-tight">AI Pitch Auditor</h2>
 
           {!result && (
             <form onSubmit={handlePitchSubmit} className="space-y-6">
               <input
                 placeholder="Startup Title"
-                className="w-full p-4 rounded-xl bg-slate-50 border"
+                className="w-full p-4 rounded-xl bg-black border border-white/10 text-white placeholder-zinc-600 focus:border-purple-500 focus:ring-1 focus:ring-purple-500 outline-none transition-all"
                 required
                 value={pitch.title}
-                onChange={(e) =>
-                  setPitch({ ...pitch, title: e.target.value })
-                }
+                onChange={(e) => setPitch({ ...pitch, title: e.target.value })}
               />
 
               <textarea
                 placeholder="Describe your startup idea..."
-                className="w-full p-4 rounded-xl bg-slate-50 border h-40"
+                className="w-full p-4 rounded-xl bg-black border border-white/10 text-white placeholder-zinc-600 focus:border-purple-500 focus:ring-1 focus:ring-purple-500 outline-none transition-all h-40"
                 required
                 value={pitch.description}
-                onChange={(e) =>
-                  setPitch({ ...pitch, description: e.target.value })
-                }
+                onChange={(e) => setPitch({ ...pitch, description: e.target.value })}
               />
 
-              <button
+              <motion.button
+                whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}
                 disabled={loading}
-                className="w-full bg-blue-600 text-white p-4 rounded-xl font-bold"
+                className="w-full bg-white text-black p-4 rounded-xl font-bold hover:shadow-[0_0_30px_rgba(255,255,255,0.2)] transition-all"
               >
                 {loading ? "Analyzing..." : (
                   <span className="flex items-center justify-center gap-2">
                     <Send size={18} /> Get AI Feedback
                   </span>
                 )}
-              </button>
+              </motion.button>
             </form>
           )}
 
@@ -177,14 +171,14 @@ const StudentDashboard = ({ token, onLogout }) => {
               <h3 className="text-xl font-bold">
                 AI Score: <span className="text-blue-600">{result.score}/100</span>
               </h3>
-              <p className="text-slate-600">{result.feedback}</p>
+              <p className="text-zinc-300">{result.feedback}</p>
 
               <button
                 onClick={() => {
                   setResult(null);
                   setPitch({ title: "", description: "", industry: "Tech" });
                 }}
-                className="text-blue-600 font-bold"
+                className="text-purple-400 font-bold hover:text-white transition-colors"
               >
                 Analyze Another Idea
               </button>
@@ -196,19 +190,22 @@ const StudentDashboard = ({ token, onLogout }) => {
       {/* ================= SUBMISSIONS ================= */}
       {(activeTab === "submissions" || activeTab === "feedback") && (
         <div className="space-y-6">
-          <h2 className="text-3xl font-bold">My Pitch History</h2>
+          <h2 className="text-3xl font-black tracking-tight">My Pitch History</h2>
 
           {myPitches.length === 0 && (
-            <p className="text-slate-500">No pitches submitted yet.</p>
+            <div className="text-center py-16 text-zinc-500">
+              <p className="text-lg">No pitches submitted yet.</p>
+              <p className="text-sm mt-1">Submit your first idea using the AI Pitch tab.</p>
+            </div>
           )}
 
           {myPitches.map((p, i) => (
             <div
               key={i}
-              className="bg-white p-6 rounded-3xl border shadow-sm hover:shadow-md transition"
+              className="bg-zinc-950 border border-white/10 p-6 rounded-3xl hover:border-white/20 transition-all"
             >
               <div className="flex justify-between items-center">
-                <h3 className="font-bold text-lg">{p.title}</h3>
+                <h3 className="font-bold text-lg text-white">{p.title}</h3>
 
                 <StatusBadge status={p.status} />
               </div>
@@ -224,13 +221,11 @@ const StudentDashboard = ({ token, onLogout }) => {
 
               {/* Feedback */}
               {p.mentor_feedback ? (
-                <div className="mt-3 bg-slate-50 p-4 rounded-xl text-sm">
-                  💬 <b>Mentor:</b> {p.mentor_feedback}
+                <div className="mt-3 bg-black/50 border border-white/8 p-4 rounded-xl text-sm text-zinc-300">
+                  💬 <b className="text-white">Mentor:</b> {p.mentor_feedback}
                 </div>
               ) : (
-                <p className="mt-3 text-slate-400 text-sm">
-                  ⏳ Awaiting mentor review
-                </p>
+                <p className="mt-3 text-zinc-600 text-sm">⏳ Awaiting mentor review</p>
               )}
             </div>
           ))}
@@ -247,32 +242,34 @@ const StudentDashboard = ({ token, onLogout }) => {
 /* ===== Reusable Components ===== */
 
 const GlassCard = ({ title, value }) => (
-  <div className="bg-white/70 backdrop-blur-xl border border-white/40 p-6 rounded-3xl shadow-xl">
-    <h3 className="text-sm text-slate-500">{title}</h3>
-    <p className="text-3xl font-bold mt-2">{value}</p>
+  <div className="bg-zinc-950 border border-white/10 p-6 rounded-3xl hover:border-white/20 transition-all">
+    <h3 className="text-sm text-zinc-500 font-medium">{title}</h3>
+    <p className="text-3xl font-black mt-2 text-white tracking-tight">{value}</p>
   </div>
 );
 
 const ActionCard = ({ icon, title, onClick }) => (
-  <div
+  <motion.div
     onClick={onClick}
-    className="cursor-pointer bg-white p-6 rounded-3xl shadow-xl hover:shadow-2xl transition flex flex-col items-center text-center"
+    whileHover={{ scale: 1.02, y: -2 }}
+    whileTap={{ scale: 0.98 }}
+    className="cursor-pointer bg-zinc-950 border border-white/10 hover:border-purple-500/40 p-8 rounded-3xl transition-all flex flex-col items-center text-center group"
   >
-    {icon}
-    <h3 className="mt-4 font-bold text-lg">{title}</h3>
-  </div>
+    <div className="text-purple-400 group-hover:text-white transition-colors">{icon}</div>
+    <h3 className="mt-4 font-bold text-base text-white">{title}</h3>
+  </motion.div>
 );
 
 const StatusBadge = ({ status }) => {
   const colors =
     status === "approved"
-      ? "bg-green-100 text-green-600"
+      ? "bg-emerald-500/15 text-emerald-400 border border-emerald-500/20"
       : status === "rejected"
-      ? "bg-red-100 text-red-600"
-      : "bg-yellow-100 text-yellow-600";
+      ? "bg-red-500/15 text-red-400 border border-red-500/20"
+      : "bg-yellow-500/15 text-yellow-400 border border-yellow-500/20";
 
   return (
-    <span className={`px-3 py-1 rounded-full text-xs capitalize ${colors}`}>
+    <span className={`px-3 py-1 rounded-full text-xs font-bold capitalize ${colors}`}>
       {status}
     </span>
   );

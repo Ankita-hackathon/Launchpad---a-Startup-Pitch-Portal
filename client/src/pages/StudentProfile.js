@@ -105,7 +105,7 @@ const StudentProfile = ({ token }) => {
     <div className="space-y-10">
 
       {/* ================= PROFILE CARD ================= */}
-      <div className="bg-white/70 backdrop-blur-xl border border-white/40 p-8 rounded-3xl shadow-xl">
+      <div className="bg-zinc-950 border border-white/10 p-8 rounded-3xl">
 
         <div className="flex flex-col md:flex-row items-center gap-8">
 
@@ -142,7 +142,7 @@ const StudentProfile = ({ token }) => {
           <div className="flex-1 space-y-4">
 
             <div className="flex justify-between items-center">
-              <h1 className="text-2xl font-bold">My Profile</h1>
+              <h1 className="text-2xl font-bold text-white tracking-tight">My Profile</h1>
 
               {!editing ? (
                 <button
@@ -214,25 +214,25 @@ const StudentProfile = ({ token }) => {
       </div>
 
       {/* ================= FEEDBACK ================= */}
-      <div className="bg-white rounded-3xl p-8 shadow-xl">
-        <h2 className="text-xl font-semibold mb-6">Mentor Feedback</h2>
+      <div className="bg-zinc-950 border border-white/10 rounded-3xl p-8">
+        <h2 className="text-xl font-bold text-white tracking-tight mb-6">Mentor Feedback</h2>
 
         {feedbacks.length === 0 ? (
-          <p className="text-slate-500">No feedback yet</p>
+          <p className="text-zinc-500">No feedback yet</p>
         ) : (
           <div className="space-y-6">
             {feedbacks.map(feed => (
-              <div key={feed._id} className="border rounded-xl p-4">
+              <div key={feed._id} className="border border-white/10 bg-black rounded-xl p-4">
                 <div className="flex justify-between mb-2">
-                  <p className="font-semibold">
+                  <p className="font-bold text-white">
                     {feed.mentor?.name || "Mentor"}
                   </p>
-                  <div className="flex items-center gap-1 text-yellow-500">
-                    <Star size={16} />
+                  <div className="flex items-center gap-1 text-yellow-400 font-bold text-sm">
+                    <Star size={16} className="fill-yellow-400" />
                     {feed.rating || 0}
                   </div>
                 </div>
-                <p className="text-slate-600">{feed.comment}</p>
+                <p className="text-zinc-400">{feed.comment}</p>
               </div>
             ))}
           </div>
@@ -247,49 +247,49 @@ const StudentProfile = ({ token }) => {
 
 const InputField = ({ label, value, editing, onChange, disabled }) => (
   <div>
-    <label className="text-sm text-slate-500">{label}</label>
+    <label className="text-sm font-bold text-zinc-500 uppercase tracking-widest">{label}</label>
     {editing && !disabled ? (
       <input
-        className="w-full mt-1 p-3 rounded-xl bg-slate-50 border"
+        className="w-full mt-2 p-3 rounded-xl bg-black border border-white/10 text-white focus:border-blue-500 outline-none transition-colors"
         value={value}
         onChange={(e) => onChange(e.target.value)}
       />
     ) : (
-      <p className="mt-1 font-medium">{value || "N/A"}</p>
+      <p className="mt-1 font-semibold text-white">{value || <span className="text-zinc-600 font-normal">N/A</span>}</p>
     )}
   </div>
 );
 
 const StatCard = ({ title, value }) => (
-  <div className="bg-white p-6 rounded-3xl shadow-xl text-center">
-    <p className="text-slate-500 text-sm">{title}</p>
-    <p className="text-3xl font-bold mt-2">{value}</p>
+  <div className="bg-zinc-950 border border-white/10 p-6 rounded-3xl text-center hover:border-white/20 transition-colors">
+    <p className="text-zinc-500 text-sm font-bold uppercase tracking-widest">{title}</p>
+    <p className="text-3xl font-black mt-2 text-white tracking-tight">{value}</p>
   </div>
 );
 
 const ProfileSkeleton = () => (
   <div className="space-y-10 animate-pulse">
     {/* Profile Card Skeleton */}
-    <div className="bg-white/70 border p-8 rounded-3xl shadow-xl flex flex-col md:flex-row items-center gap-8">
-      <div className="w-32 h-32 rounded-full bg-slate-200"></div>
+    <div className="bg-zinc-950 border border-white/10 p-8 rounded-3xl flex flex-col md:flex-row items-center gap-8">
+      <div className="w-32 h-32 rounded-full bg-zinc-800"></div>
       <div className="flex-1 space-y-4 w-full">
-        <div className="h-8 bg-slate-200 rounded-xl w-1/3 mb-6"></div>
+        <div className="h-8 bg-zinc-800 rounded-xl w-1/3 mb-6"></div>
         <div className="grid md:grid-cols-2 gap-6">
-          <div className="h-14 bg-slate-200 rounded-xl"></div>
-          <div className="h-14 bg-slate-200 rounded-xl"></div>
-          <div className="h-14 bg-slate-200 rounded-xl"></div>
-          <div className="h-14 bg-slate-200 rounded-xl"></div>
+          <div className="h-14 bg-zinc-800 rounded-xl"></div>
+          <div className="h-14 bg-zinc-800 rounded-xl"></div>
+          <div className="h-14 bg-zinc-800 rounded-xl"></div>
+          <div className="h-14 bg-zinc-800 rounded-xl"></div>
         </div>
       </div>
     </div>
     {/* Stats Skeleton */}
     <div className="grid md:grid-cols-3 gap-6">
-      <div className="h-32 bg-slate-200 rounded-3xl"></div>
-      <div className="h-32 bg-slate-200 rounded-3xl"></div>
-      <div className="h-32 bg-slate-200 rounded-3xl"></div>
+      <div className="h-32 bg-zinc-800 rounded-3xl"></div>
+      <div className="h-32 bg-zinc-800 rounded-3xl"></div>
+      <div className="h-32 bg-zinc-800 rounded-3xl"></div>
     </div>
     {/* Feedback Skeleton */}
-    <div className="h-48 bg-slate-200 rounded-3xl"></div>
+    <div className="h-48 bg-zinc-800 rounded-3xl"></div>
   </div>
 );
 

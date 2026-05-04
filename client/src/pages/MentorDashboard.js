@@ -95,13 +95,10 @@ const MentorDashboard = ({ token, onLogout }) => {
         <div className="space-y-10">
 
           {/* Hero */}
-          <div className="bg-gradient-to-r from-indigo-600 to-blue-600 text-white p-10 rounded-3xl shadow-xl">
-            <h1 className="text-4xl font-bold">
-              Welcome back 👋
-            </h1>
-            <p className="opacity-90 mt-2">
-              Review student startup ideas and guide the next unicorn.
-            </p>
+          <div className="bg-gradient-to-r from-blue-600/20 to-cyan-600/20 border border-blue-500/20 text-white p-10 rounded-3xl relative overflow-hidden">
+            <div className="absolute inset-0 bg-gradient-to-br from-blue-500/10 to-transparent" />
+            <h1 className="text-4xl font-black tracking-tight relative z-10">Welcome back 👋</h1>
+            <p className="text-zinc-300 mt-2 relative z-10">Review student startup ideas and guide the next unicorn.</p>
           </div>
 
           {/* Stats */}
@@ -120,41 +117,34 @@ const MentorDashboard = ({ token, onLogout }) => {
         <div className="space-y-6">
 
           <div className="flex justify-between items-center">
-            <h1 className="text-3xl font-bold">Student Submissions</h1>
+            <h1 className="text-3xl font-black tracking-tight">Student Submissions</h1>
             <input
-              className="bg-white border border-slate-200 rounded-xl px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="bg-black border border-white/10 text-white placeholder-zinc-600 rounded-xl px-4 py-2 focus:outline-none focus:border-blue-500 transition-all"
               placeholder="Search pitch..."
               onChange={(e) => setSearchTerm(e.target.value)}
             />
           </div>
 
-          <div className="bg-white rounded-3xl shadow-xl overflow-hidden">
+          <div className="bg-zinc-950 border border-white/10 rounded-3xl overflow-hidden">
             <table className="w-full">
-              <thead className="bg-slate-100 text-slate-600 text-sm">
+              <thead className="bg-black/50 text-zinc-400 text-sm border-b border-white/8">
                 <tr>
-                  <th className="p-5 text-left">Title</th>
-                  <th>Student</th>
-                  <th>AI Score</th>
-                  <th>Status</th>
-                  <th>Review</th>
+                  <th className="p-5 text-left font-semibold">Title</th>
+                  <th className="font-semibold">Student</th>
+                  <th className="font-semibold">AI Score</th>
+                  <th className="font-semibold">Status</th>
+                  <th className="font-semibold">Review</th>
                 </tr>
               </thead>
               <tbody>
                 {filtered.map((p) => (
-                  <tr key={p._id} className="border-t hover:bg-slate-50 transition">
-                    <td className="p-5 font-semibold">{p.title}</td>
-                    <td>{p.student_name}</td>
-                    <td className="font-bold text-blue-600">
-                      {p.ai_score}%
-                    </td>
+                  <tr key={p._id} className="border-t border-white/5 hover:bg-white/3 transition">
+                    <td className="p-5 font-semibold text-white">{p.title}</td>
+                    <td className="text-zinc-400">{p.student_name}</td>
+                    <td className="font-bold text-blue-400">{p.ai_score}%</td>
+                    <td><StatusBadge status={p.status} /></td>
                     <td>
-                      <StatusBadge status={p.status} />
-                    </td>
-                    <td>
-                      <button
-                        onClick={() => setSelectedPitch(p)}
-                        className="text-blue-600 hover:text-blue-800"
-                      >
+                      <button onClick={() => setSelectedPitch(p)} className="text-blue-400 hover:text-white transition-colors">
                         <Eye />
                       </button>
                     </td>
@@ -170,7 +160,7 @@ const MentorDashboard = ({ token, onLogout }) => {
       {/* ================= ANALYTICS ================= */}
       {activeTab === "mentor_analytics" && (
         <div className="space-y-6">
-          <h2 className="text-3xl font-bold">Analytics Overview</h2>
+          <h2 className="text-3xl font-black tracking-tight">Analytics Overview</h2>
 
           <div className="grid md:grid-cols-3 gap-6">
             <GlassCard title="Total Reviews" value={total} />
@@ -188,14 +178,14 @@ const MentorDashboard = ({ token, onLogout }) => {
 
       {/* ================= AI ASSISTANT ================= */}
       {activeTab === "mentor_ai" && (
-        <div className="max-w-2xl bg-white rounded-3xl shadow-xl p-6">
-          <h2 className="text-xl font-bold mb-4">Mentor AI Assistant</h2>
+        <div className="max-w-2xl bg-zinc-950 border border-white/10 rounded-3xl p-6">
+          <h2 className="text-xl font-bold mb-4 tracking-tight">Mentor AI Assistant</h2>
 
-          <div className="h-72 overflow-y-auto border rounded-xl p-4 mb-4 bg-slate-50">
+          <div className="h-72 overflow-y-auto border border-white/8 rounded-xl p-4 mb-4 bg-black/50 space-y-2">
             {chatMessages.map((m, i) => (
-              <div key={i} className="mb-3">
-                <p className={`text-sm ${m.role === "user" ? "text-blue-600" : "text-slate-700"}`}>
-                  <b>{m.role === "user" ? "You" : "AI"}:</b> {m.text}
+              <div key={i} className="mb-2">
+                <p className={`text-sm ${m.role === "user" ? "text-blue-400" : "text-zinc-300"}`}>
+                  <b className="text-white">{m.role === "user" ? "You" : "AI"}:</b> {m.text}
                 </p>
               </div>
             ))}
@@ -205,13 +195,10 @@ const MentorDashboard = ({ token, onLogout }) => {
             <input
               value={chatInput}
               onChange={(e) => setChatInput(e.target.value)}
-              className="flex-1 border rounded-xl px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="flex-1 bg-black border border-white/10 text-white placeholder-zinc-600 rounded-xl px-4 py-2 focus:border-blue-500 outline-none transition-all"
               placeholder="Ask AI something..."
             />
-            <button
-              onClick={sendMentorMessage}
-              className="bg-blue-600 text-white px-5 rounded-xl"
-            >
+            <button onClick={sendMentorMessage} className="bg-blue-600 hover:bg-blue-500 text-white px-5 rounded-xl transition-colors">
               <Send size={18} />
             </button>
           </div>
@@ -226,56 +213,35 @@ const MentorDashboard = ({ token, onLogout }) => {
 
       {/* ================= REVIEW MODAL ================= */}
       {selectedPitch && (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
+        <div className="fixed inset-0 bg-black/70 backdrop-blur-md flex items-center justify-center z-50">
           <motion.div
             initial={{ scale: 0.9, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
-            className="bg-white p-8 rounded-3xl w-full max-w-lg shadow-2xl space-y-4"
+            transition={{ type: 'spring', stiffness: 400, damping: 30 }}
+            className="bg-zinc-950 border border-white/15 p-8 rounded-3xl w-full max-w-lg shadow-2xl space-y-5"
           >
-            <h2 className="text-xl font-bold">{selectedPitch.title}</h2>
-            <p className="text-sm text-slate-600">
-              {selectedPitch.description}
-            </p>
+            <h2 className="text-xl font-bold text-white">{selectedPitch.title}</h2>
+            <p className="text-sm text-zinc-400">{selectedPitch.description}</p>
 
             <textarea
               placeholder="Mentor feedback"
-              className="w-full border rounded-xl p-3"
+              className="w-full bg-black border border-white/10 text-white placeholder-zinc-600 rounded-xl p-3 focus:border-blue-500 outline-none transition-all"
               value={feedback}
               onChange={(e) => setFeedback(e.target.value)}
             />
 
             <div className="flex gap-2 items-center">
               {[1,2,3,4,5].map(r => (
-                <Star
-                  key={r}
-                  size={22}
-                  className={`cursor-pointer ${r <= rating ? "text-yellow-500" : "text-slate-300"}`}
-                  onClick={() => setRating(r)}
-                />
+                <Star key={r} size={24} className={`cursor-pointer transition-colors ${r <= rating ? "text-yellow-400" : "text-zinc-700"}`} onClick={() => setRating(r)} />
               ))}
             </div>
 
             <div className="flex gap-3">
-              <button
-                onClick={() => submitReview("approved")}
-                className="flex-1 bg-green-600 text-white rounded-xl py-2"
-              >
-                Approve
-              </button>
-              <button
-                onClick={() => submitReview("rejected")}
-                className="flex-1 bg-red-600 text-white rounded-xl py-2"
-              >
-                Reject
-              </button>
+              <button onClick={() => submitReview("approved")} className="flex-1 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl py-3 font-bold transition-colors">Approve</button>
+              <button onClick={() => submitReview("rejected")} className="flex-1 bg-red-600 hover:bg-red-500 text-white rounded-xl py-3 font-bold transition-colors">Reject</button>
             </div>
 
-            <button
-              onClick={() => setSelectedPitch(null)}
-              className="text-center text-sm text-slate-500 w-full"
-            >
-              Cancel
-            </button>
+            <button onClick={() => setSelectedPitch(null)} className="text-center text-sm text-zinc-500 hover:text-white transition-colors w-full">Cancel</button>
           </motion.div>
         </div>
       )}
@@ -287,22 +253,22 @@ const MentorDashboard = ({ token, onLogout }) => {
 /* ===== Reusable Components ===== */
 
 const GlassCard = ({ title, value }) => (
-  <div className="bg-white/70 backdrop-blur-xl border border-white/40 p-6 rounded-3xl shadow-xl">
-    <h3 className="text-sm text-slate-500">{title}</h3>
-    <p className="text-3xl font-bold mt-2">{value}</p>
+  <div className="bg-zinc-950 border border-white/10 p-6 rounded-3xl hover:border-white/20 transition-all">
+    <h3 className="text-sm text-zinc-500 font-medium">{title}</h3>
+    <p className="text-3xl font-black mt-2 text-white tracking-tight">{value}</p>
   </div>
 );
 
 const StatusBadge = ({ status }) => {
   const colors =
     status === "approved"
-      ? "bg-green-100 text-green-600"
+      ? "bg-emerald-500/15 text-emerald-400 border border-emerald-500/20"
       : status === "rejected"
-      ? "bg-red-100 text-red-600"
-      : "bg-yellow-100 text-yellow-600";
+      ? "bg-red-500/15 text-red-400 border border-red-500/20"
+      : "bg-yellow-500/15 text-yellow-400 border border-yellow-500/20";
 
   return (
-    <span className={`px-3 py-1 rounded-full text-xs capitalize ${colors}`}>
+    <span className={`px-3 py-1 rounded-full text-xs font-bold capitalize ${colors}`}>
       {status}
     </span>
   );

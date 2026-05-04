@@ -2,7 +2,102 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ─── Base ───────────────────────────────────────── */
 body {
-  @apply bg-slate-50 text-slate-900;
   font-family: 'Inter', sans-serif;
+  background-color: #000;
+  color: #fff;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* ─── LIGHT MODE OVERRIDES ───────────────────────── */
+/* Applied when <html> has class="light-mode"         */
+
+html.light-mode body {
+  background-color: #f1f5f9;
+  color: #0f172a;
+}
+
+/* Backgrounds */
+html.light-mode .bg-black        { background-color: #f8fafc !important; }
+html.light-mode .bg-zinc-950     { background-color: #ffffff !important; }
+html.light-mode .bg-zinc-950\/80 { background-color: rgba(255,255,255,0.8) !important; }
+html.light-mode .bg-zinc-900     { background-color: #f1f5f9 !important; }
+html.light-mode .bg-zinc-800     { background-color: #e2e8f0 !important; }
+html.light-mode .bg-white\/5     { background-color: rgba(0,0,0,0.04) !important; }
+html.light-mode .bg-white\/10    { background-color: rgba(0,0,0,0.06) !important; }
+html.light-mode .bg-white\/15    { background-color: rgba(0,0,0,0.08) !important; }
+html.light-mode .bg-black\/20    { background-color: rgba(0,0,0,0.03) !important; }
+html.light-mode .bg-black\/40    { background-color: rgba(255,255,255,0.8) !important; }
+html.light-mode .bg-black\/50    { background-color: rgba(255,255,255,0.3) !important; }
+html.light-mode .bg-black\/60    { background-color: rgba(255,255,255,0.85) !important; }
+
+/* Text */
+html.light-mode .text-white      { color: #0f172a !important; }
+html.light-mode .text-zinc-200   { color: #1e293b !important; }
+html.light-mode .text-zinc-300   { color: #334155 !important; }
+html.light-mode .text-zinc-400   { color: #475569 !important; }
+html.light-mode .text-zinc-500   { color: #64748b !important; }
+html.light-mode .text-zinc-600   { color: #94a3b8 !important; }
+html.light-mode .text-zinc-700   { color: #94a3b8 !important; }
+
+/* Borders */
+html.light-mode .border-white\/5  { border-color: rgba(0,0,0,0.06) !important; }
+html.light-mode .border-white\/8  { border-color: rgba(0,0,0,0.08) !important; }
+html.light-mode .border-white\/10 { border-color: rgba(0,0,0,0.10) !important; }
+html.light-mode .border-white\/15 { border-color: rgba(0,0,0,0.12) !important; }
+html.light-mode .border-white\/20 { border-color: rgba(0,0,0,0.14) !important; }
+html.light-mode .border-white\/25 { border-color: rgba(0,0,0,0.16) !important; }
+
+/* Sidebar — keep slate-800 so nav items stay visible */
+html.light-mode aside {
+  background-color: #1e293b !important;
+  border-color: rgba(255,255,255,0.06) !important;
+}
+
+/* Header bar */
+html.light-mode header {
+  background-color: rgba(255,255,255,0.85) !important;
+  border-color: rgba(0,0,0,0.08) !important;
+}
+
+/* Main content area */
+html.light-mode main {
+  background-color: #f1f5f9 !important;
+}
+
+/* Tables */
+html.light-mode table thead { background-color: #f8fafc !important; }
+html.light-mode table tbody tr:hover { background-color: rgba(0,0,0,0.03) !important; }
+
+/* Input fields */
+html.light-mode input:not([type="file"]),
+html.light-mode textarea,
+html.light-mode select {
+  background-color: #f8fafc !important;
+  border-color: rgba(0,0,0,0.12) !important;
+  color: #0f172a !important;
+}
+html.light-mode input::placeholder,
+html.light-mode textarea::placeholder {
+  color: #94a3b8 !important;
+}
+
+/* Glassmorphism panels & modals */
+html.light-mode .backdrop-blur-xl { backdrop-filter: blur(20px); }
+
+/* Gradient orbs — tint them for light bg */
+html.light-mode .bg-purple-600\/15 { background-color: rgba(147,51,234,0.06) !important; }
+html.light-mode .bg-blue-600\/15   { background-color: rgba(37,99,235,0.06) !important; }
+html.light-mode .bg-cyan-600\/10   { background-color: rgba(8,145,178,0.05) !important; }
+
+/* Scrollbar */
+html.light-mode ::-webkit-scrollbar-track { background: #f1f5f9; }
+html.light-mode ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 8px; }
+
+/* Smooth transitions on key properties */
+*, *::before, *::after {
+  transition-property: background-color, border-color, color, box-shadow;
+  transition-duration: 0.2s;
+  transition-timing-function: ease;
 }

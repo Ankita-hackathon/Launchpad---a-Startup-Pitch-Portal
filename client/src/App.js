@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { ThemeProvider } from "./context/ThemeContext";
 import {
   BrowserRouter as Router,
   Routes,
@@ -11,6 +12,7 @@ import MentorLogin from "./pages/MentorLogin";
 import Register from "./pages/Register";
 import StudentDashboard from "./pages/StudentDashboard";
 import MentorDashboard from "./pages/MentorDashboard";
+import LandingPage from "./pages/LandingPage";
 import ProtectedRoute from "./components/ProtectedRoute";
 
 function App() {
@@ -33,6 +35,7 @@ function App() {
   };
 
   return (
+    <ThemeProvider>
     <Router>
       <Routes>
 
@@ -103,20 +106,17 @@ function App() {
         <Route
           path="/"
           element={
-            <Navigate
-              to={
-                user
-                  ? user.userType === "student"
-                    ? "/student"
-                    : "/mentor"
-                  : "/login"
-              }
-            />
+            user ? (
+              <Navigate to={user.userType === "student" ? "/student" : "/mentor"} />
+            ) : (
+              <LandingPage />
+            )
           }
         />
 
       </Routes>
     </Router>
+    </ThemeProvider>
   );
 }
 

@@ -17,12 +17,12 @@ const NewsSlider = () => {
                 transition={{ repeat: Infinity, duration: 20, ease: "linear" }}
             >
                 {[...newsData, ...newsData].map((news, index) => (
-                    <div key={index} className="w-80 bg-white p-6 rounded-2xl shadow-sm border border-slate-100 flex flex-col gap-3">
-                        <div className={`flex items-center gap-2 text-white px-3 py-1 rounded-full text-[10px] font-bold w-max ${news.color}`}>
+                    <div key={index} className="w-80 bg-zinc-950 p-6 rounded-3xl border border-white/10 flex flex-col gap-3 hover:border-white/20 transition-colors">
+                        <div className={`flex items-center gap-2 text-white px-3 py-1.5 rounded-full text-[10px] font-bold w-max ${news.color}`}>
                             {news.icon} {news.tag}
                         </div>
-                        <h4 className="font-bold text-slate-800 text-lg">{news.title}</h4>
-                        <p className="text-slate-500 text-sm leading-relaxed">{news.desc}</p>
+                        <h4 className="font-bold text-white text-lg tracking-tight">{news.title}</h4>
+                        <p className="text-zinc-400 text-sm leading-relaxed">{news.desc}</p>
                     </div>
                 ))}
             </motion.div>
