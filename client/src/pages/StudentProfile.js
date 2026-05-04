@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { Star, Camera } from "lucide-react";
+import { Star, Camera, Loader2 } from "lucide-react";
 import { motion } from "framer-motion";
 
 const StudentProfile = ({ token }) => {
@@ -9,6 +9,7 @@ const StudentProfile = ({ token }) => {
   const [loading, setLoading] = useState(true);
   const [editing, setEditing] = useState(false);
   const [success, setSuccess] = useState(false);
+  const [uploading, setUploading] = useState(false);
 
   const authHeaders = { Authorization: `Bearer ${token}` };
 
@@ -62,6 +63,7 @@ const StudentProfile = ({ token }) => {
     const file = e.target.files[0];
     if (!file) return;
 
+    setUploading(true);
     const formData = new FormData();
     formData.append("photo", file);
 
@@ -72,14 +74,15 @@ const StudentProfile = ({ token }) => {
         { headers: { ...authHeaders, "Content-Type": "multipart/form-data" } }
       );
 
-      setProfile({ ...profile, photo: res.data.photo });
+      setProfile({ ...profile, imagelink: res.data.photo });
     } catch {
       alert("Upload failed");
+    } finally {
+      setUploading(false);
     }
   };
 
-  if (loading) return <div className="text-center mt-10">Loading profile...</div>;
-  if (!profile) return <div className="text-center mt-10">Profile not found</div>;
+  if (loading || !profile) return <ProfileSkeleton />;
 
   const feedbacks = submissions
     .filter(s => s.mentor_feedback || s.rating)
@@ -108,22 +111,29 @@ const StudentProfile = ({ token }) => {
 
           {/* Profile Image */}
           <div className="relative">
-            <img
-              src={
-                profile.photo
-                  ? `http://localhost:5000/uploads/${profile.photo}`
-                  : "https://via.placeholder.com/120"
-              }
-              alt="Profile"
-              className="w-32 h-32 rounded-full object-cover border"
-            />
+            {uploading ? (
+              <div className="w-32 h-32 rounded-full border flex items-center justify-center bg-slate-100">
+                <Loader2 className="animate-spin text-blue-600" size={32} />
+              </div>
+            ) : (
+              <img
+                src={
+                  profile.imagelink
+                    ? profile.imagelink
+                    : "https://via.placeholder.com/120"
+                }
+                alt="Profile"
+                className="w-32 h-32 rounded-full object-cover border"
+              />
+            )}
 
-            <label className="absolute bottom-0 right-0 bg-blue-600 text-white p-2 rounded-full cursor-pointer">
+            <label className={`absolute bottom-0 right-0 bg-blue-600 text-white p-2 rounded-full cursor-pointer transition-opacity ${uploading ? 'opacity-50 pointer-events-none' : ''}`}>
               <Camera size={16} />
               <input
                 type="file"
                 className="hidden"
                 onChange={handlePhotoUpload}
+                disabled={uploading}
               />
             </label>
           </div>
@@ -254,6 +264,32 @@ const StatCard = ({ title, value }) => (
   <div className="bg-white p-6 rounded-3xl shadow-xl text-center">
     <p className="text-slate-500 text-sm">{title}</p>
     <p className="text-3xl font-bold mt-2">{value}</p>
+  </div>
+);
+
+const ProfileSkeleton = () => (
+  <div className="space-y-10 animate-pulse">
+    {/* Profile Card Skeleton */}
+    <div className="bg-white/70 border p-8 rounded-3xl shadow-xl flex flex-col md:flex-row items-center gap-8">
+      <div className="w-32 h-32 rounded-full bg-slate-200"></div>
+      <div className="flex-1 space-y-4 w-full">
+        <div className="h-8 bg-slate-200 rounded-xl w-1/3 mb-6"></div>
+        <div className="grid md:grid-cols-2 gap-6">
+          <div className="h-14 bg-slate-200 rounded-xl"></div>
+          <div className="h-14 bg-slate-200 rounded-xl"></div>
+          <div className="h-14 bg-slate-200 rounded-xl"></div>
+          <div className="h-14 bg-slate-200 rounded-xl"></div>
+        </div>
+      </div>
+    </div>
+    {/* Stats Skeleton */}
+    <div className="grid md:grid-cols-3 gap-6">
+      <div className="h-32 bg-slate-200 rounded-3xl"></div>
+      <div className="h-32 bg-slate-200 rounded-3xl"></div>
+      <div className="h-32 bg-slate-200 rounded-3xl"></div>
+    </div>
+    {/* Feedback Skeleton */}
+    <div className="h-48 bg-slate-200 rounded-3xl"></div>
   </div>
 );
 

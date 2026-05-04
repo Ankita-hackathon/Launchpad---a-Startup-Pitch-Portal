@@ -206,4 +206,35 @@ const getStudentProfile = async ( req , res )=>{
     }
 }
 
-module.exports = { ExistStudent, RegisterStudent, ValidStudent, ValidToken , SavePitch , getPitches , getStudentProfile };
+const updateStudentProfile = async (req, res) => {
+    try {
+        const { name, college, department } = req.body;
+        await studentModel.updateOne(
+            { _id: req.userId },
+            { $set: { name, college, department } }
+        );
+        res.status(200).json({ success: true, message: "Profile updated successfully" });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ success: false, message: "Failed to update profile" });
+    }
+}
+
+const uploadStudentPhoto = async (req, res) => {
+    try {
+        if (!req.file) throw new Error("No file uploaded");
+        const imageUrl = req.file.path; // Cloudinary returns the secure URL in path
+        
+        await studentModel.updateOne(
+            { _id: req.userId },
+            { $set: { imagelink: imageUrl } }
+        );
+
+        res.status(200).json({ success: true, photo: imageUrl });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ success: false, message: "Failed to upload photo" });
+    }
+}
+
+module.exports = { ExistStudent, RegisterStudent, ValidStudent, ValidToken , SavePitch , getPitches , getStudentProfile, updateStudentProfile, uploadStudentPhoto };

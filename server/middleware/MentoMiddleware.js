@@ -211,4 +211,41 @@ const getAllPitches = async (req , res)=>{
     }
 }
 
-module.exports = { ExistMentor, RegisterMentor, validMentor, validToken, getAnalyticsOfMentor , getMentorProfile , updateStatusForPitch , getAllPitches}
+const updateMentorProfile = async (req, res) => {
+    try {
+        const { name, experties } = req.body;
+        
+        let expertiesArray = experties;
+        if (typeof experties === 'string') {
+            expertiesArray = experties.split(',').map(e => e.trim()).filter(e => e !== "");
+        }
+
+        await MentorModel.updateOne(
+            { _id: req.userId },
+            { $set: { name, experties: expertiesArray } }
+        );
+        res.status(200).json({ success: true, message: "Profile updated successfully" });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ success: false, message: "Failed to update profile" });
+    }
+}
+
+const uploadMentorPhoto = async (req, res) => {
+    try {
+        if (!req.file) throw new Error("No file uploaded");
+        const imageUrl = req.file.path; 
+        
+        await MentorModel.updateOne(
+            { _id: req.userId },
+            { $set: { imagelink: imageUrl } }
+        );
+
+        res.status(200).json({ success: true, photo: imageUrl });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ success: false, message: "Failed to upload photo" });
+    }
+}
+
+module.exports = { ExistMentor, RegisterMentor, validMentor, validToken, getAnalyticsOfMentor , getMentorProfile , updateStatusForPitch , getAllPitches, updateMentorProfile, uploadMentorPhoto }
