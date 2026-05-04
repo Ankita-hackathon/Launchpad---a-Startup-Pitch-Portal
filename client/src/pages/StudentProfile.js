@@ -3,38 +3,35 @@ import axios from "axios";
 import { Star, Camera } from "lucide-react";
 import { motion } from "framer-motion";
 
-const StudentProfile = ({ user }) => {
+const StudentProfile = ({ token }) => {
   const [profile, setProfile] = useState(null);
   const [submissions, setSubmissions] = useState([]);
-  const [feedbacks, setFeedbacks] = useState([]);
   const [loading, setLoading] = useState(true);
   const [editing, setEditing] = useState(false);
   const [success, setSuccess] = useState(false);
 
-  const userId = user?._id || user?.id;
+  const authHeaders = { Authorization: `Bearer ${token}` };
 
   useEffect(() => {
-    if (userId) fetchProfileData();
-  }, [userId]);
+    fetchProfileData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const fetchProfileData = async () => {
     try {
       setLoading(true);
 
       const profileRes = await axios.get(
-        `http://localhost:5000/api/students/${userId}`
+        `http://localhost:5000/api/student/profile`,
+        { headers: authHeaders }
       );
-      setProfile(profileRes.data);
+      setProfile(profileRes.data.user);
 
       const submissionRes = await axios.get(
-        `http://localhost:5000/api/submissions/student/${userId}`
+        `http://localhost:5000/api/student/my-pitches`,
+        { headers: authHeaders }
       );
-      setSubmissions(submissionRes.data || []);
-
-      const feedbackRes = await axios.get(
-        `http://localhost:5000/api/feedback/student/${userId}`
-      );
-      setFeedbacks(feedbackRes.data || []);
+      setSubmissions(submissionRes.data?.pitches?.submittedPitches || []);
 
     } catch (error) {
       console.error("Profile loading error:", error);
@@ -47,8 +44,9 @@ const StudentProfile = ({ user }) => {
   const handleUpdate = async () => {
     try {
       await axios.put(
-        `http://localhost:5000/api/students/${userId}`,
-        profile
+        `http://localhost:5000/api/student/profile`,
+        profile,
+        { headers: authHeaders }
       );
 
       setEditing(false);
@@ -69,8 +67,9 @@ const StudentProfile = ({ user }) => {
 
     try {
       const res = await axios.post(
-        `http://localhost:5000/api/students/upload/${userId}`,
-        formData
+        `http://localhost:5000/api/student/upload`,
+        formData,
+        { headers: { ...authHeaders, "Content-Type": "multipart/form-data" } }
       );
 
       setProfile({ ...profile, photo: res.data.photo });
@@ -82,12 +81,21 @@ const StudentProfile = ({ user }) => {
   if (loading) return <div className="text-center mt-10">Loading profile...</div>;
   if (!profile) return <div className="text-center mt-10">Profile not found</div>;
 
+  const feedbacks = submissions
+    .filter(s => s.mentor_feedback || s.rating)
+    .map(s => ({
+      _id: s._id,
+      rating: s.rating,
+      comment: s.mentor_feedback,
+      mentor: { name: "Mentor" }
+    }));
+
   const avgRating =
     feedbacks.length > 0
       ? (
-          feedbacks.reduce((acc, f) => acc + (f.rating || 0), 0) /
-          feedbacks.length
-        ).toFixed(1)
+        feedbacks.reduce((acc, f) => acc + (f.rating || 0), 0) /
+        feedbacks.length
+      ).toFixed(1)
       : "N/A";
 
   return (

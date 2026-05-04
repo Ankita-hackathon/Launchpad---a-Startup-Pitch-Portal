@@ -5,7 +5,7 @@ import { Rocket, Loader2 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 const Login = ({ onLogin }) => {
-    const [form, setForm] = useState({ email: '', password: '', role: 'student' });
+    const [form, setForm] = useState({ email: '', password: '' });
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
     const navigate = useNavigate();
@@ -17,16 +17,15 @@ const Login = ({ onLogin }) => {
 
         try {
             const res = await axios.post(
-                'http://127.0.0.1:5000/api/auth/login',
+                'http://localhost:5000/api/student/auth/login',
                 form
             );
 
-            if (res.data.success) {
-                onLogin(res.data.user);
-            }
+            onLogin({ token: res.data.token, userType: 'student' });
+
         } catch (err) {
-            console.error("Login Error:", err.response?.data);
-            setError(err.response?.data?.message || "Invalid Email, Password, or Role");
+            console.error('Student Login Error:', err.response?.data);
+            setError(err.response?.data?.message || 'Invalid email or password');
         } finally {
             setLoading(false);
         }
@@ -62,39 +61,11 @@ const Login = ({ onLogin }) => {
 
                 {/* Form */}
                 <form onSubmit={handleSubmit} className="space-y-4">
-                    {/* Role Toggle */}
-                    <div className="flex bg-slate-100 p-1 rounded-xl mb-4">
-                        <button
-                            type="button"
-                            className={`flex-1 py-2 rounded-lg text-sm font-bold transition ${
-                                form.role === 'student'
-                                    ? 'bg-white shadow text-blue-600'
-                                    : 'text-slate-500'
-                            }`}
-                            onClick={() => setForm({ ...form, role: 'student' })}
-                        >
-                            Student
-                        </button>
-                        <button
-                            type="button"
-                            className={`flex-1 py-2 rounded-lg text-sm font-bold transition ${
-                                form.role === 'mentor'
-                                    ? 'bg-white shadow text-blue-600'
-                                    : 'text-slate-500'
-                            }`}
-                            onClick={() => setForm({ ...form, role: 'mentor' })}
-                        >
-                            Mentor
-                        </button>
-                    </div>
-
                     <input
                         type="email"
                         placeholder="Email Address"
                         className="w-full p-4 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none"
-                        onChange={(e) =>
-                            setForm({ ...form, email: e.target.value })
-                        }
+                        onChange={(e) => setForm({ ...form, email: e.target.value })}
                         required
                     />
 
@@ -102,9 +73,7 @@ const Login = ({ onLogin }) => {
                         type="password"
                         placeholder="Password"
                         className="w-full p-4 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none"
-                        onChange={(e) =>
-                            setForm({ ...form, password: e.target.value })
-                        }
+                        onChange={(e) => setForm({ ...form, password: e.target.value })}
                         required
                     />
 
@@ -120,14 +89,23 @@ const Login = ({ onLogin }) => {
                     </button>
                 </form>
 
-                {/* Sign Up */}
+                {/* Sign Up + Mentor Login */}
                 <p className="text-center text-sm text-slate-500 mt-6">
-                    Don’t have an account?{' '}
+                    Don't have an account?{' '}
                     <span
                         onClick={() => navigate('/register')}
                         className="text-blue-600 font-semibold cursor-pointer hover:underline"
                     >
                         Sign Up
+                    </span>
+                </p>
+                <p className="text-center text-sm text-slate-400 mt-2">
+                    Are you a mentor?{' '}
+                    <span
+                        onClick={() => navigate('/mentor-login')}
+                        className="text-blue-500 font-semibold cursor-pointer hover:underline"
+                    >
+                        Mentor Login
                     </span>
                 </p>
             </motion.div>

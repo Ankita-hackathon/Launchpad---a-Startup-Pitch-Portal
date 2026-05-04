@@ -7,6 +7,7 @@ import {
 } from "react-router-dom";
 
 import Login from "./pages/Login";
+import MentorLogin from "./pages/MentorLogin";
 import Register from "./pages/Register";
 import StudentDashboard from "./pages/StudentDashboard";
 import MentorDashboard from "./pages/MentorDashboard";
@@ -14,18 +15,21 @@ import ProtectedRoute from "./components/ProtectedRoute";
 
 function App() {
   const [user, setUser] = useState(() => {
-    const savedUser = localStorage.getItem("user");
-    return savedUser ? JSON.parse(savedUser) : null;
+    const token    = localStorage.getItem("token");
+    const userType = localStorage.getItem("userType"); // "student" | "mentor"
+    return token ? { token, userType } : null;
   });
 
-  const handleLogin = (userData) => {
-    setUser(userData);
-    localStorage.setItem("user", JSON.stringify(userData));
+  const handleLogin = ({ token, userType }) => {
+    localStorage.setItem("token", token);
+    localStorage.setItem("userType", userType);
+    setUser({ token, userType });
   };
 
   const handleLogout = () => {
     setUser(null);
-    localStorage.removeItem("user");
+    localStorage.removeItem("token");
+    localStorage.removeItem("userType");
   };
 
   return (
@@ -33,18 +37,6 @@ function App() {
       <Routes>
 
         {/* ================= PUBLIC ROUTES ================= */}
-        <Route
-          path="/login"
-          element={
-            !user ? (
-              <Login onLogin={handleLogin} />
-            ) : (
-              <Navigate
-                to={user.role === "student" ? "/student" : "/mentor"}
-              />
-            )
-          }
-        />
 
         <Route
           path="/register"
@@ -52,9 +44,31 @@ function App() {
             !user ? (
               <Register />
             ) : (
-              <Navigate
-                to={user.role === "student" ? "/student" : "/mentor"}
-              />
+              <Navigate to={user.userType === "student" ? "/student" : "/mentor"} />
+            )
+          }
+        />
+
+        {/* Student Login */}
+        <Route
+          path="/login"
+          element={
+            !user ? (
+              <Login onLogin={handleLogin} />
+            ) : (
+              <Navigate to={user.userType === "student" ? "/student" : "/mentor"} />
+            )
+          }
+        />
+
+        {/* Mentor Login */}
+        <Route
+          path="/mentor-login"
+          element={
+            !user ? (
+              <MentorLogin onLogin={handleLogin} />
+            ) : (
+              <Navigate to="/mentor" />
             )
           }
         />
@@ -63,9 +77,9 @@ function App() {
         <Route
           path="/student"
           element={
-            <ProtectedRoute user={user} allowedRole="student">
+            <ProtectedRoute user={user} allowedType="student">
               <StudentDashboard
-                user={user}
+                token={user?.token}
                 onLogout={handleLogout}
               />
             </ProtectedRoute>
@@ -76,9 +90,9 @@ function App() {
         <Route
           path="/mentor"
           element={
-            <ProtectedRoute user={user} allowedRole="mentor">
+            <ProtectedRoute user={user} allowedType="mentor">
               <MentorDashboard
-                user={user}
+                token={user?.token}
                 onLogout={handleLogout}
               />
             </ProtectedRoute>
@@ -92,7 +106,7 @@ function App() {
             <Navigate
               to={
                 user
-                  ? user.role === "student"
+                  ? user.userType === "student"
                     ? "/student"
                     : "/mentor"
                   : "/login"

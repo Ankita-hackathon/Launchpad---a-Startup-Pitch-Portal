@@ -14,7 +14,7 @@ import {
 } from "lucide-react";
 import AIChatbot from "./AIChatbot";
 
-const Layout = ({ children, user, onLogout, activeTab, setActiveTab }) => {
+const Layout = ({ children, userType, onLogout, activeTab, setActiveTab }) => {
   const [collapsed, setCollapsed] = useState(false);
 
   /* 🔹 Common menu */
@@ -38,7 +38,7 @@ const Layout = ({ children, user, onLogout, activeTab, setActiveTab }) => {
   ];
 
   const menuItems =
-    user?.role === "mentor"
+    userType === "mentor"
       ? [...commonMenu, ...mentorMenu]
       : [...commonMenu, ...studentMenu];
 
@@ -99,13 +99,11 @@ const Layout = ({ children, user, onLogout, activeTab, setActiveTab }) => {
             <>
               <div className="flex items-center gap-3 mb-3">
                 <div className="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center font-bold">
-                  {user?.name?.charAt(0)}
+                  {userType === "mentor" ? "M" : "S"}
                 </div>
                 <div>
-                  <p className="font-semibold text-sm">{user?.name}</p>
-                  <p className="text-xs text-slate-400 capitalize">
-                    {user?.role}
-                  </p>
+                  <p className="font-semibold text-sm capitalize">{userType}</p>
+                  <p className="text-xs text-slate-400 capitalize">{userType} Portal</p>
                 </div>
               </div>
             </>
@@ -133,7 +131,7 @@ const Layout = ({ children, user, onLogout, activeTab, setActiveTab }) => {
 
           <div className="flex items-center gap-4">
             <div className="text-sm text-slate-500">
-              Welcome back, <span className="font-semibold text-slate-700">{user?.name}</span>
+              <span className="font-semibold text-slate-700 capitalize">{userType} Dashboard</span>
             </div>
           </div>
         </header>

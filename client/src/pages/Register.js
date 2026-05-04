@@ -5,15 +5,19 @@ import { UserPlus, ShieldCheck, GraduationCap } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 const Register = () => {
-    const [form, setForm] = useState({ name: '', email: '', password: '', role: 'student' });
+    const [form, setForm] = useState({ name: '', email: '', password: '' });
+    const [userType, setUserType] = useState('student');
     const navigate = useNavigate();
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        const url = userType === 'student'
+            ? 'http://localhost:5000/api/student/auth/signup'
+            : 'http://localhost:5000/api/mentor/auth/signup';
         try {
-            await axios.post('http://localhost:5000/api/auth/register', form);
+            await axios.post(url, form);
             alert("Registration Successful! Please login.");
-            navigate('/login');
+            navigate(userType === 'student' ? '/login' : '/mentor-login');
         } catch (err) {
             alert("Registration failed. Email might already exist.");
         }
@@ -50,15 +54,15 @@ const Register = () => {
                     <div className="flex gap-4 mt-4">
                         <button
                             type="button"
-                            onClick={() => setForm({...form, role: 'student'})}
-                            className={`flex-1 p-4 rounded-xl border flex flex-col items-center gap-2 transition ${form.role === 'student' ? 'border-blue-600 bg-blue-50 text-blue-600' : 'text-slate-500'}`}
+                            onClick={() => setUserType('student')}
+                            className={`flex-1 p-4 rounded-xl border flex flex-col items-center gap-2 transition ${userType === 'student' ? 'border-blue-600 bg-blue-50 text-blue-600' : 'text-slate-500'}`}
                         >
                             <GraduationCap /> <span className="text-sm font-bold">Student</span>
                         </button>
                         <button
                             type="button"
-                            onClick={() => setForm({...form, role: 'mentor'})}
-                            className={`flex-1 p-4 rounded-xl border flex flex-col items-center gap-2 transition ${form.role === 'mentor' ? 'border-blue-600 bg-blue-50 text-blue-600' : 'text-slate-500'}`}
+                            onClick={() => setUserType('mentor')}
+                            className={`flex-1 p-4 rounded-xl border flex flex-col items-center gap-2 transition ${userType === 'mentor' ? 'border-blue-600 bg-blue-50 text-blue-600' : 'text-slate-500'}`}
                         >
                             <ShieldCheck /> <span className="text-sm font-bold">Mentor</span>
                         </button>

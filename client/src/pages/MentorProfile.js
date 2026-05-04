@@ -1,27 +1,40 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 
-const MentorProfile = ({ user }) => {
+const MentorProfile = ({ token }) => {
   const [profile, setProfile] = useState(null);
-  const [reviews, setReviews] = useState([]);
+  const [analytics, setAnalytics] = useState(null);
+
+  const authHeaders = { Authorization: `Bearer ${token}` };
+
+  // Decode userId from JWT payload (no library needed)
+  const getUserIdFromToken = () => {
+    try {
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      return payload._id || payload.id;
+    } catch { return null; }
+  };
 
   useEffect(() => {
-    if (user?._id) {
-      fetchProfile();
-    }
-  }, [user]);
+    fetchProfile();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const fetchProfile = async () => {
     try {
+      const userId = getUserIdFromToken();
+
       const profileRes = await axios.get(
-        `http://localhost:5000/api/mentors/${user._id}`
+        `http://localhost:5000/api/mentor/profile/${userId}`,
+        { headers: authHeaders }
       );
       setProfile(profileRes.data);
 
-      const reviewRes = await axios.get(
-        `http://localhost:5000/api/feedback/mentor/${user._id}`
+      const analyticsRes = await axios.get(
+        `http://localhost:5000/api/mentor/analytics`,
+        { headers: authHeaders }
       );
-      setReviews(reviewRes.data);
+      setAnalytics(analyticsRes.data);
     } catch (err) {
       console.error("Mentor profile error:", err);
     }
@@ -30,13 +43,6 @@ const MentorProfile = ({ user }) => {
   if (!profile) {
     return <div className="text-center mt-10">Loading profile...</div>;
   }
-
-  const avgRating =
-    reviews.length > 0
-      ? (
-          reviews.reduce((acc, r) => acc + r.rating, 0) / reviews.length
-        ).toFixed(1)
-      : "N/A";
 
   return (
     <div className="space-y-8">
@@ -49,9 +55,7 @@ const MentorProfile = ({ user }) => {
           <Info label="Full Name" value={profile.name} />
           <Info label="Email" value={profile.email} />
           <Info label="Role" value="Mentor" />
-          <Info label="Expertise" value={profile.expertise || "Not added"} />
-          <Info label="Experience" value={profile.experience || "Not added"} />
-          <Info label="Organization" value={profile.organization || "Not added"} />
+          <Info label="Expertise" value={profile.experties?.join(", ") || "Not added"} />
         </div>
       </div>
 
@@ -60,16 +64,10 @@ const MentorProfile = ({ user }) => {
         <h2 className="text-xl font-semibold mb-6">Mentor Performance</h2>
 
         <div className="grid md:grid-cols-4 gap-6">
-          <StatCard title="Total Reviews" value={reviews.length} />
-          <StatCard
-            title="Approved"
-            value={reviews.filter(r => r.status === "approved").length}
-          />
-          <StatCard
-            title="Rejected"
-            value={reviews.filter(r => r.status === "rejected").length}
-          />
-          <StatCard title="Avg Rating" value={avgRating} />
+          <StatCard title="Total Reviews" value={analytics?.total ?? 0} />
+          <StatCard title="Approved"      value={analytics?.approved ?? 0} />
+          <StatCard title="Rejected"      value={analytics?.rejected ?? 0} />
+          <StatCard title="Avg AI Score"  value={analytics?.avgScore ?? "N/A"} />
         </div>
       </div>
 

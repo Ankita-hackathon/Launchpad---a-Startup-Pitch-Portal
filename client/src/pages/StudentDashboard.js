@@ -7,7 +7,7 @@ import StartupLibrary from "../components/StartupLibrary";
 import { Lightbulb, Rocket, Send, Star, TrendingUp } from "lucide-react";
 import { motion } from "framer-motion";
 
-const StudentDashboard = ({ user, onLogout }) => {
+const StudentDashboard = ({ token, onLogout }) => {
   const [activeTab, setActiveTab] = useState("dashboard");
   const [loading, setLoading] = useState(false);
   const [pitch, setPitch] = useState({
@@ -18,21 +18,23 @@ const StudentDashboard = ({ user, onLogout }) => {
   const [result, setResult] = useState(null);
   const [myPitches, setMyPitches] = useState([]);
 
-  const userId = user?._id || user?.id;
+  const authHeaders = { Authorization: `Bearer ${token}` };
 
   /* ================= FETCH PITCHES ================= */
   useEffect(() => {
-    if ((activeTab === "submissions" || activeTab === "feedback") && userId) {
+    if (activeTab === "submissions" || activeTab === "feedback") {
       fetchMyPitches();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeTab]);
 
   const fetchMyPitches = async () => {
     try {
       const res = await axios.get(
-        `http://localhost:5000/api/student/my-pitches/${userId}`
+        `http://localhost:5000/api/student/my-pitches`,
+        { headers: authHeaders }
       );
-      setMyPitches(res.data || []);
+      setMyPitches(res.data?.pitches?.submittedPitches || []);
     } catch (err) {
       console.error("Failed to load pitches", err);
     }
@@ -45,16 +47,14 @@ const StudentDashboard = ({ user, onLogout }) => {
 
     try {
       const res = await axios.post(
-        "http://localhost:5000/api/pitch/analyze",
-        {
-          ...pitch,
-          userId
-        }
+        "http://localhost:5000/api/student/pitch",
+        pitch,
+        { headers: authHeaders }
       );
 
       setResult(res.data);
     } catch {
-      alert("AI Analysis failed.");
+      alert("Pitch submission failed.");
     } finally {
       setLoading(false);
     }
@@ -73,7 +73,7 @@ const StudentDashboard = ({ user, onLogout }) => {
 
   return (
     <Layout
-      user={user}
+      userType="student"
       onLogout={onLogout}
       activeTab={activeTab}
       setActiveTab={setActiveTab}
@@ -86,7 +86,7 @@ const StudentDashboard = ({ user, onLogout }) => {
           {/* Hero */}
           <div className="bg-gradient-to-r from-indigo-600 to-blue-600 text-white p-10 rounded-3xl shadow-xl">
             <h1 className="text-4xl font-bold">
-              Welcome back, {user?.name?.split(" ")[0]} 🚀
+              Welcome back 🚀
             </h1>
             <p className="opacity-90 mt-2">
               Build, refine and launch your startup idea.
@@ -125,7 +125,7 @@ const StudentDashboard = ({ user, onLogout }) => {
 
       {/* ================= PROFILE ================= */}
       {activeTab === "profile" && (
-        <StudentProfile user={user} />
+        <StudentProfile token={token} />
       )}
 
       {/* ================= AI PITCH ================= */}

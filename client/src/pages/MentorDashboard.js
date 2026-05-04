@@ -6,7 +6,7 @@ import StartupLibrary from "../components/StartupLibrary";
 import { Eye, Send, Star } from "lucide-react";
 import { motion } from "framer-motion";
 
-const MentorDashboard = ({ user, onLogout }) => {
+const MentorDashboard = ({ token, onLogout }) => {
   const [activeTab, setActiveTab] = useState("dashboard");
   const [pitches, setPitches] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
@@ -17,13 +17,19 @@ const MentorDashboard = ({ user, onLogout }) => {
   const [chatInput, setChatInput] = useState("");
   const [chatMessages, setChatMessages] = useState([]);
 
+  const authHeaders = { Authorization: `Bearer ${token}` };
+
   useEffect(() => {
     fetchPitches();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const fetchPitches = async () => {
     try {
-      const res = await axios.get("http://127.0.0.1:5000/api/mentor/all-pitches");
+      const res = await axios.get(
+        "http://localhost:5000/api/mentor/all-pitches",
+        { headers: authHeaders }
+      );
       setPitches(res.data || []);
     } catch (err) {
       console.error("Failed to load pitches", err);
@@ -32,12 +38,11 @@ const MentorDashboard = ({ user, onLogout }) => {
 
   const submitReview = async (status) => {
     try {
-      await axios.post("http://127.0.0.1:5000/api/mentor/update-status", {
-        pitchId: selectedPitch.id,
-        status,
-        feedback,
-        rating: Number(rating)
-      });
+      await axios.post(
+        "http://localhost:5000/api/mentor/update-status",
+        { pitchId: selectedPitch._id, status, feedback, rating: Number(rating) },
+        { headers: authHeaders }
+      );
 
       setSelectedPitch(null);
       setFeedback("");
@@ -57,10 +62,11 @@ const MentorDashboard = ({ user, onLogout }) => {
     setChatInput("");
 
     try {
-      const res = await axios.post("http://127.0.0.1:5000/api/ai/chat", {
-        message: msg
-      });
-
+      const res = await axios.post(
+        "http://localhost:5000/api/ai/chat",
+        { message: msg },
+        { headers: authHeaders }
+      );
       setChatMessages(prev => [...prev, { role: "ai", text: res.data.reply }]);
     } catch {
       setChatMessages(prev => [...prev, { role: "ai", text: "AI unavailable" }]);
@@ -78,7 +84,7 @@ const MentorDashboard = ({ user, onLogout }) => {
 
   return (
     <Layout
-      user={user}
+      userType="mentor"
       onLogout={onLogout}
       activeTab={activeTab}
       setActiveTab={setActiveTab}
@@ -91,7 +97,7 @@ const MentorDashboard = ({ user, onLogout }) => {
           {/* Hero */}
           <div className="bg-gradient-to-r from-indigo-600 to-blue-600 text-white p-10 rounded-3xl shadow-xl">
             <h1 className="text-4xl font-bold">
-              Welcome back, {user?.name?.split(" ")[0]} 👋
+              Welcome back 👋
             </h1>
             <p className="opacity-90 mt-2">
               Review student startup ideas and guide the next unicorn.
@@ -135,7 +141,7 @@ const MentorDashboard = ({ user, onLogout }) => {
               </thead>
               <tbody>
                 {filtered.map((p) => (
-                  <tr key={p.id} className="border-t hover:bg-slate-50 transition">
+                  <tr key={p._id} className="border-t hover:bg-slate-50 transition">
                     <td className="p-5 font-semibold">{p.title}</td>
                     <td>{p.student_name}</td>
                     <td className="font-bold text-blue-600">
@@ -213,7 +219,7 @@ const MentorDashboard = ({ user, onLogout }) => {
       )}
 
       {/* ================= PROFILE ================= */}
-      {activeTab === "profile" && <MentorProfile user={user} />}
+      {activeTab === "profile" && <MentorProfile token={token} />}
 
       {/* ================= LIBRARY ================= */}
       {activeTab === "library" && <StartupLibrary />}

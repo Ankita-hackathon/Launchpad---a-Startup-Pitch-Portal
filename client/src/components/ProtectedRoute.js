@@ -1,17 +1,17 @@
 import React from "react";
 import { Navigate } from "react-router-dom";
 
-const ProtectedRoute = ({ user, allowedRole, children }) => {
+const ProtectedRoute = ({ user, allowedType, children }) => {
   // Not logged in
-  if (!user) {
+  if (!user || !user.token) {
     return <Navigate to="/login" replace />;
   }
 
-  // Wrong role trying to access
-  if (allowedRole && user.role !== allowedRole) {
+  // Wrong user type trying to access the route
+  if (allowedType && user.userType !== allowedType) {
     return (
       <Navigate
-        to={user.role === "student" ? "/student" : "/mentor"}
+        to={user.userType === "student" ? "/student" : "/mentor"}
         replace
       />
     );
