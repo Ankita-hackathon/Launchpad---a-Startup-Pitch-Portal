@@ -4,7 +4,7 @@ const router = express.Router();
 
 
 
-app.post('/api/pitch/analyze')
+// app.post('/api/pitch/analyze')
 
 
 

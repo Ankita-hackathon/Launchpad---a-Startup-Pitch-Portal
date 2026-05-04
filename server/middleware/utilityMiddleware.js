@@ -3,10 +3,10 @@ const jwt = require("jsonwebtoken");
 require("dotenv").config();
 
 
-const fieldsValidation = zod.Object(
+const fieldsValidation = zod.object(
     {
         email: zod.string().email(),
-        password: z.string()
+        password: zod.string()
             .min(8, { message: "Password must be at least 8 characters long" })
             .regex(/[a-z]/, { message: "Must contain at least one lowercase letter" })
             .regex(/[A-Z]/, { message: "Must contain at least one uppercase letter" })
@@ -35,7 +35,7 @@ const GenrateToken = ( req , res  )=>{
         
         res.status(200).json({
             "success" : true,
-            "token" : `Bearer ${token}`
+            "token" : token
         })
         
     } catch (error) {

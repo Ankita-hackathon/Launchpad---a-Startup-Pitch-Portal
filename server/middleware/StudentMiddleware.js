@@ -2,6 +2,7 @@ const studentModel = require("../models/Student")
 const argon2 = require('argon2');
 const { GenerateContent } = require("./ChatBotMiddleware")
 const pitchModel = require("../models/Pitch")
+const jwt = require("jsonwebtoken")
 
 const ExistStudent = async (req, res, next) => {
     try {
@@ -33,6 +34,7 @@ const RegisterStudent = async (req, res) => {
         const hash_password = await argon2.hash(user.password);
 
         const new_user = new studentModel({
+            "name": user.name,
             "email": user.email,
             "password": hash_password
         })
@@ -87,7 +89,7 @@ const ValidStudent = async (req, res, next) => {
 }
 
 
-const ValidToken = (req , res , next)=>{
+const ValidToken = async (req , res , next) => {
     try {
         const token = req.headers.authorization.split(" ")[1];
 
@@ -122,7 +124,9 @@ const SavePitch = async (req , res)=>{
         
         const pitch = req.body;
         if(!pitch) throw new Error("pitch data not found");
-        const genContent = GenerateContent(pitch.description);
+        const genContent = await GenerateContent(pitch.description);
+
+        const user = await studentModel.findById(req.userId);
 
         const new_pitch = new pitchModel({
             "title" : pitch.title,
@@ -130,7 +134,9 @@ const SavePitch = async (req , res)=>{
             "industry" : pitch.industry,
             "ai_score" : genContent.score,
             "ai_feedback" : genContent.feedback,
-            "reviewed" : false
+            "reviewed" : false,
+            "student_name" : user ? user.name : "Unknown Student",
+            "status": "pending"
         })
 
         let saved_pitch = await new_pitch.save();
@@ -143,7 +149,9 @@ const SavePitch = async (req , res)=>{
 
         res.status(200).json({
             "success" : true,
-            "messgae" : "pitch created successfully"
+            "message" : "pitch created successfully",
+            "score": genContent.score,
+            "feedback": genContent.feedback
         })
 
 
@@ -159,7 +167,7 @@ const getPitches = async (req ,res )=>{
         
         const userId = req.userId;
 
-        const pitches = await studentModel.findOne({ "_id" : userId } , { "submittedPitches" : 1 }).populate('pitches');
+        const pitches = await studentModel.findOne({ "_id" : userId } , { "submittedPitches" : 1 }).populate('submittedPitches');
 
         res.status(200).json({
             "status" : true,
@@ -191,7 +199,7 @@ const getStudentProfile = async ( req , res )=>{
     } catch (error) {
         console.log(error.message);
 
-        res.json(403).json({
+        res.status(403).json({
             "message" : "unable to fetch student profile",
             "success" : false
         })

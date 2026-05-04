@@ -1,5 +1,7 @@
 const MentorModel = require("../models/Mentor")
+const pitchModel = require("../models/Pitch")
 const argon2 = require("argon2")
+const jwt = require("jsonwebtoken")
 
 const ExistMentor = async (req, res, next) => {
     try {
@@ -30,6 +32,7 @@ const RegisterMentor = async (req, res) => {
         const hash_password = await argon2.hash(user.password);
 
         const new_user = new MentorModel({
+            "name": user.name,
             "email": user.email,
             "password": hash_password
         })
@@ -83,7 +86,7 @@ const validMentor = async (req, res, next) => {
 }
 
 
-const validToken = (req, res, next) => {
+const validToken = async (req, res, next) => {
     try {
         const token = req.headers.authorization.split(" ")[1];
 
@@ -151,4 +154,61 @@ const getAnalyticsOfMentor = async (req, res) => {
     }
 };
 
-module.exports = { ExistMentor, RegisterMentor, validMentor, validToken, getAnalyticsOfMentor }
+const getMentorProfile = async (req , res)=>{
+    try{
+        const userId = req.userId;
+        const mentor = await MentorModel.findById(userId);
+        if(!mentor) throw new Error("Mentor not found");
+        res.status(200).json(mentor);
+    }catch(error){
+        console.log(error.message);
+        res.status(400).json({
+            "message": "something went wrong"
+        })
+    }
+}
+
+const updateStatusForPitch = async (req , res)=>{
+
+    try{
+         const { pitchId, status, feedback, rating } = req.body;
+
+        if(!pitchId || !status) throw new Error("Invalid request ");
+
+        await pitchModel.updateOne({ "_id" : pitchId }, {
+            $set : {
+                status : status,
+                mentor_feedback : feedback,
+                rating : rating
+            }
+        })
+        
+        res.status(200).json({
+            "success" : true,
+            "message" : "pitch response updated successfully"
+        })
+
+    }catch(error){
+        console.log(error.message);
+
+        res.status(400).json({
+            "success" : false,
+            "message" : "something went wrong while updating the pitch"
+        })
+
+    }
+}
+
+const getAllPitches = async (req , res)=>{
+    try{
+        const pitches = await pitchModel.find();
+        res.status(200).json(pitches);
+    }catch(error){
+        console.log(error.message);
+        res.status(400).json({
+            "message": "something went wrong while fetching the pitches"
+        })
+    }
+}
+
+module.exports = { ExistMentor, RegisterMentor, validMentor, validToken, getAnalyticsOfMentor , getMentorProfile , updateStatusForPitch , getAllPitches}

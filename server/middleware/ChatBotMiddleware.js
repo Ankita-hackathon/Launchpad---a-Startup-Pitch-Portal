@@ -45,4 +45,19 @@ const GenerateContent = async (description) => {
     }
 };
 
-module.exports = { GenerateContent }; 
+const ChatWithAI = async (req, res) => {
+    try {
+        const { message } = req.body;
+        if (!message) return res.status(400).json({ reply: "Please provide a message." });
+
+        const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash-lite" });
+        const result = await model.generateContent(message);
+        
+        res.status(200).json({ reply: result.response.text() });
+    } catch (error) {
+        console.error("ChatBot error:", error);
+        res.status(500).json({ reply: "I'm having trouble connecting right now." });
+    }
+};
+
+module.exports = { GenerateContent, ChatWithAI }; 
